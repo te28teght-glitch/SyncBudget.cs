@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Security.Cryptography.X509Certificates;
+
 namespace SyncBudgetApp.Models
 {
     [Table("Transactions")]

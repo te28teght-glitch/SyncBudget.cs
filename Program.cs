@@ -10,7 +10,6 @@ internal static class Program
     {
         ApplicationConfiguration.Initialize();
         
-        // Настройка базы данных
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
         var dbPath = Path.Combine(Application.UserAppDataPath, "budget.db");
         optionsBuilder.UseSqlite($"Data Source={dbPath}");
@@ -20,6 +19,6 @@ internal static class Program
             db.Database.EnsureCreated();
         }
         
-        Application.Run(new MainForm());
+        Application.Run(new Form1());
     }
 }
