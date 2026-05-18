@@ -9,7 +9,6 @@ namespace SyncBudgetApp
     public partial class AddEditTransactionForm : Form
     {
         private Transaction? _transaction;
-        private bool _isEdit = false;
         private AppDbContext? _context;
         
         public decimal Amount => numericUpDownAmount.Value;
@@ -31,7 +30,6 @@ namespace SyncBudgetApp
             if (transaction != null)
             {
                 _transaction = transaction;
-                _isEdit = true;
                 LoadTransactionData();
                 this.Text = "Редактирование транзакции";
             }
@@ -59,48 +57,28 @@ namespace SyncBudgetApp
         private void LoadCategories()
         {
             comboBoxCategory.Items.Clear();
-            var currentType = comboBoxType.SelectedItem?.ToString();
+            string? currentType = comboBoxType.SelectedItem?.ToString();
             
-            if (_context != null && currentType != null)
-            {
-                var categories = _context.Categories
-                    .Where(c => c.Type == currentType)
-                    .Select(c => c.Name)
-                    .ToList();
-                
-                if (categories.Any())
-                {
-                    comboBoxCategory.Items.AddRange(categories.ToArray());
-                }
-                else
-                {
-                    AddDefaultCategories(currentType);
-                }
-            }
-            else
-            {
-                AddDefaultCategories(currentType ?? "Expense");
-            }
+            if (string.IsNullOrEmpty(currentType))
+                currentType = "Expense";
             
-            if (comboBoxCategory.Items.Count > 0 && string.IsNullOrEmpty(comboBoxCategory.Text))
-                comboBoxCategory.SelectedIndex = 0;
-        }
-        
-        private void AddDefaultCategories(string type)
-        {
-            if (type == "Income")
+            // Добавляем категории по умолчанию
+            if (currentType == "Income")
             {
                 comboBoxCategory.Items.AddRange(new string[] { 
-                    "Зарплата", "Фриланс", "Подарок", "Инвестиции", "Другое" 
+                    "Зарплата", "Фриланс", "Подарок", "Инвестиции", "Бонус", "Другое" 
                 });
             }
             else
             {
                 comboBoxCategory.Items.AddRange(new string[] { 
                     "Еда", "Транспорт", "Развлечения", "Коммунальные услуги", 
-                    "Одежда", "Здоровье", "Образование", "Другое" 
+                    "Одежда", "Здоровье", "Образование", "Кафе", "Другое" 
                 });
             }
+            
+            if (comboBoxCategory.Items.Count > 0 && string.IsNullOrEmpty(comboBoxCategory.Text))
+                comboBoxCategory.SelectedIndex = 0;
         }
         
         private void InitializeComponent()
@@ -122,100 +100,100 @@ namespace SyncBudgetApp
             
             // numericUpDownAmount
             this.numericUpDownAmount.DecimalPlaces = 2;
-            this.numericUpDownAmount.Location = new System.Drawing.Point(120, 30);
+            this.numericUpDownAmount.Location = new System.Drawing.Point(130, 30);
             this.numericUpDownAmount.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
             this.numericUpDownAmount.Name = "numericUpDownAmount";
-            this.numericUpDownAmount.Size = new System.Drawing.Size(250, 27);
+            this.numericUpDownAmount.Size = new System.Drawing.Size(220, 27);
             this.numericUpDownAmount.TabIndex = 0;
             this.numericUpDownAmount.ThousandsSeparator = true;
             
             // comboBoxType
             this.comboBoxType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxType.Items.AddRange(new object[] { "Income", "Expense" });
-            this.comboBoxType.Location = new System.Drawing.Point(120, 70);
+            this.comboBoxType.Location = new System.Drawing.Point(130, 70);
             this.comboBoxType.Name = "comboBoxType";
-            this.comboBoxType.Size = new System.Drawing.Size(250, 28);
+            this.comboBoxType.Size = new System.Drawing.Size(220, 28);
             this.comboBoxType.TabIndex = 1;
             this.comboBoxType.SelectedIndexChanged += ComboBoxType_SelectedIndexChanged;
             
             // comboBoxCategory
-            this.comboBoxCategory.Location = new System.Drawing.Point(120, 110);
+            this.comboBoxCategory.Location = new System.Drawing.Point(130, 110);
             this.comboBoxCategory.Name = "comboBoxCategory";
-            this.comboBoxCategory.Size = new System.Drawing.Size(250, 28);
+            this.comboBoxCategory.Size = new System.Drawing.Size(220, 28);
             this.comboBoxCategory.TabIndex = 2;
             
             // dateTimePickerDate
-            this.dateTimePickerDate.Location = new System.Drawing.Point(120, 150);
+            this.dateTimePickerDate.Location = new System.Drawing.Point(130, 150);
             this.dateTimePickerDate.Name = "dateTimePickerDate";
-            this.dateTimePickerDate.Size = new System.Drawing.Size(250, 27);
+            this.dateTimePickerDate.Size = new System.Drawing.Size(220, 27);
             this.dateTimePickerDate.TabIndex = 3;
             
             // textBoxNote
-            this.textBoxNote.Location = new System.Drawing.Point(120, 190);
+            this.textBoxNote.Location = new System.Drawing.Point(130, 190);
             this.textBoxNote.Multiline = true;
             this.textBoxNote.Name = "textBoxNote";
-            this.textBoxNote.Size = new System.Drawing.Size(250, 80);
+            this.textBoxNote.Size = new System.Drawing.Size(220, 80);
             this.textBoxNote.TabIndex = 4;
             
             // Labels
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(30, 32);
+            this.label1.Location = new System.Drawing.Point(20, 32);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(60, 20);
             this.label1.TabIndex = 5;
             this.label1.Text = "Сумма:";
             
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(30, 73);
+            this.label2.Location = new System.Drawing.Point(20, 73);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(38, 20);
             this.label2.TabIndex = 6;
             this.label2.Text = "Тип:";
             
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(30, 113);
+            this.label3.Location = new System.Drawing.Point(20, 113);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(82, 20);
             this.label3.TabIndex = 7;
             this.label3.Text = "Категория:";
             
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(30, 156);
+            this.label4.Location = new System.Drawing.Point(20, 156);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(48, 20);
             this.label4.TabIndex = 8;
             this.label4.Text = "Дата:";
             
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(30, 193);
+            this.label5.Location = new System.Drawing.Point(20, 193);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(80, 20);
             this.label5.TabIndex = 9;
             this.label5.Text = "Примечание:";
             
             // buttonOK
-            this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonOK.Location = new System.Drawing.Point(120, 290);
+            this.buttonOK.Location = new System.Drawing.Point(130, 290);
             this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(110, 40);
+            this.buttonOK.Size = new System.Drawing.Size(100, 40);
             this.buttonOK.TabIndex = 10;
             this.buttonOK.Text = "OK";
             this.buttonOK.UseVisualStyleBackColor = true;
             this.buttonOK.Click += ButtonOK_Click;
+            this.buttonOK.DialogResult = DialogResult.OK;
             
             // buttonCancel
-            this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(260, 290);
+            this.buttonCancel.Location = new System.Drawing.Point(250, 290);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(110, 40);
+            this.buttonCancel.Size = new System.Drawing.Size(100, 40);
             this.buttonCancel.TabIndex = 11;
             this.buttonCancel.Text = "Отмена";
             this.buttonCancel.UseVisualStyleBackColor = true;
+            this.buttonCancel.DialogResult = DialogResult.Cancel;
             
             // AddEditTransactionForm
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(400, 350);
+            this.ClientSize = new System.Drawing.Size(380, 360);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.label5);
