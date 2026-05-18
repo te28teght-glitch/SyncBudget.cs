@@ -6,7 +6,7 @@ namespace SyncBudgetApp.Models
     public class Transaction
     {
         public int Id {get; set;}
-        public decimal Amout {get; set;}
+        public decimal Amount {get; set;}
         public string Type {get; set;} = "Income";
         public string Category {get;set;} = "";
         public DateTime Date {get; set;}

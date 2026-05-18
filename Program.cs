@@ -1,24 +1,37 @@
-using Microsoft.EntityFrameworkCore;
+using SyncBudgetApp;
 using SyncBudgetApp.Data;
+using Microsoft.EntityFrameworkCore;
 
-namespace SyncBudgetApp;
-
-internal static class Program
+namespace SyncBudgetApp
 {
-    [STAThread]
-    static void Main()
+    internal static class Program
     {
-        ApplicationConfiguration.Initialize();
-        
-        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-        var dbPath = Path.Combine(Application.UserAppDataPath, "budget.db");
-        optionsBuilder.UseSqlite($"Data Source={dbPath}");
-        
-        using (var db = new AppDbContext(optionsBuilder.Options))
+        [STAThread]
+        static void Main()
         {
-            db.Database.EnsureCreated();
+            try
+            {
+                ApplicationConfiguration.Initialize();
+                
+                // Создаём контекст для проверки БД
+                var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+                var dbPath = Path.Combine(Application.UserAppDataPath, "budget.db");
+                optionsBuilder.UseSqlite($"Data Source={dbPath}");
+                
+                using (var context = new AppDbContext(optionsBuilder.Options))
+                {
+                    context.Database.EnsureCreated();
+                }
+                
+                Application.Run(new Form1());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при запуске: {ex.Message}\n\n{ex.StackTrace}", 
+                    "Критическая ошибка", 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Error);
+            }
         }
-        
-        Application.Run(new Form1());
     }
 }
