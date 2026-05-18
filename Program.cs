@@ -1,16 +1,25 @@
+using Microsoft.EntityFrameworkCore;
+using SyncBudgetApp.Data;
+
 namespace SyncBudgetApp;
 
-static class Program
+internal static class Program
 {
-    /// <summary>
-    ///  The main entry point for the application.
-    /// </summary>
     [STAThread]
     static void Main()
     {
-        // To customize application configuration such as set high DPI settings or default font,
-        // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
-        Application.Run(new Form1());
-    }    
+        
+        // Настройка базы данных
+        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+        var dbPath = Path.Combine(Application.UserAppDataPath, "budget.db");
+        optionsBuilder.UseSqlite($"Data Source={dbPath}");
+        
+        using (var db = new AppDbContext(optionsBuilder.Options))
+        {
+            db.Database.EnsureCreated();
+        }
+        
+        Application.Run(new MainForm());
+    }
 }
